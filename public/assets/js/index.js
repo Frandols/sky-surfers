@@ -13,17 +13,13 @@ const MOVEMENTS = {
 
 socket.on(
     EVENTS.POSITION,
-    position => {
-        console.log(`DATA: ${position}`, player.style.left)
-
-        player.style.left = position + 'px'
-    }
+    position => player.style.left = position + 'px'
 )
 
 window.addEventListener(
     'keydown',
     event => socket.emit(
         EVENTS.MOVEMENT,
-        MOVEMENTS[event.code]
+        MOVEMENTS[event.code] ? MOVEMENTS[event.code] : 'none'
     )
 )

@@ -8,6 +8,8 @@ import openWindow from './window'
 
 import log from './logger'
 
+import EVENTS from './events'
+
 const http = createHTTPServer()
 
 const client = new Server(http)
@@ -15,17 +17,17 @@ const controller = createNETServer(
     socket => {
         log.info('Controller connected')
 
-        socket.on(
-            'data',
-            position => client.emit(
-                'position',
-                String(position)
-            )
+        controller.on(
+            EVENTS.CONTROLLER.MOVEMENT,
+            direction => socket.write(direction)
         )
 
-        controller.on(
-            'movement',
-            direction => socket.write(direction)
+        socket.on(
+            EVENTS.CONTROLLER.POSITION,
+            position => client.emit(
+                EVENTS.CLIENT.POSITION,
+                String(position)
+            )
         )
     }
 )
@@ -36,9 +38,9 @@ client.on(
         log.info('Client connected')
 
         socket.on(
-            'movement',
+            EVENTS.CLIENT.MOVEMENT,
             direction => controller.emit(
-                'movement',
+                EVENTS.CONTROLLER.MOVEMENT,
                 direction === 'left' || direction === 'right'
                 ? direction
                 : 'none'
