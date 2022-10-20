@@ -2,7 +2,8 @@ const socket = io.connect('http://localhost:5000')
 const player = document.querySelector('.player')
 
 const EVENTS = {
-    DATA: 'data'
+    POSITION: 'position',
+    MOVEMENT: 'movement'
 }
 
 const MOVEMENTS = {
@@ -11,18 +12,18 @@ const MOVEMENTS = {
 }
 
 socket.on(
-    EVENTS.DATA,
-    (data) => {
-        console.log(`DATA: ${data}`, player.style.left)
+    EVENTS.POSITION,
+    position => {
+        console.log(`DATA: ${position}`, player.style.left)
 
-        player.style.left = `${Number(data)}px`
+        player.style.left = position + 'px'
     }
 )
 
 window.addEventListener(
     'keydown',
     event => socket.emit(
-        EVENTS.DATA,
+        EVENTS.MOVEMENT,
         MOVEMENTS[event.code]
     )
 )

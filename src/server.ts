@@ -8,41 +8,27 @@ import openWindow from './window'
 
 import log from './logger'
 
-let movement: 'left' | 'right' | 'none' = 'none'
-let position: number = 0
-
 const http = createHTTPServer()
-const net = createNETServer(
+
+const client = new Server(http)
+const controller = createNETServer(
     socket => {
         log.info('Controller connected')
 
         socket.on(
             'data',
-            data => {
-                const payload = Number(data)
+            position => client.emit(
+                'position',
+                String(position)
+            )
+        )
 
-                if(position !== payload) {
-                    position = payload
-
-                    log.info(`Position updated: ${position}`)
-
-                    client.emit(
-                        'data',
-                        position
-                    )
-                }
-
-                socket.write(movement)
-
-                if(movement !== 'none') {
-                    movement = 'none'
-                }
-            }
+        controller.on(
+            'movement',
+            direction => socket.write(direction)
         )
     }
 )
-
-const client = new Server(http)
 
 client.on(
     'connect',
@@ -50,19 +36,13 @@ client.on(
         log.info('Client connected')
 
         socket.on(
-            'data',
-            data => {
-                if(data === 'left' || data === 'right') {
-                    movement = data
-                }
-            }
-        )
-
-        client.on(
-            'position',
-            () => {
-                console.log('ACA')
-            }
+            'movement',
+            direction => controller.emit(
+                'movement',
+                direction === 'left' || direction === 'right'
+                ? direction
+                : 'none'
+            )
         )
     }
 )
@@ -73,7 +53,7 @@ const init = () => {
         () => log.info(`Client server enabled: http://${config.host}:${config.clientPort}`)
     )
 
-    net.listen(
+    controller.listen(
         config.controllerPort,
         () => {
             log.info(`Controller server enabled: http://${config.host}:${config.controllerPort}`)
