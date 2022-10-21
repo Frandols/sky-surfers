@@ -33,13 +33,13 @@ const controller = createNETServer(
 )
 
 client.on(
-    'connect',
+    EVENTS.CLIENT.CONNECT,
     socket => {
         log.info('Client connected')
 
         socket.on(
             EVENTS.CLIENT.MOVEMENT,
-            direction => controller.emit(
+            (direction: string) => controller.emit(
                 EVENTS.CONTROLLER.MOVEMENT,
                 direction === 'left' || direction === 'right'
                 ? direction

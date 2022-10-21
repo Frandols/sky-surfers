@@ -4,6 +4,7 @@ export default {
         MOVEMENT: 'movement'
     },
     CLIENT: {
+        CONNECT: 'connect',
         POSITION: 'position',
         MOVEMENT: 'movement'
     }
