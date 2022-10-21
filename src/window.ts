@@ -7,7 +7,7 @@ import log from './logger'
 
 const createWindow = () => {
     const window = new BrowserWindow({
-        width: 800,
+        width: 814,
         height: 600
     })
 

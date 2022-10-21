@@ -6,8 +6,9 @@
 
 .container {
     position: relative;
-    width: 100vw;
+    width: 800px;
     height: 100vh;
+    background-color: yellow;
 }
 
 .player {
@@ -15,4 +16,5 @@
     width: 200px;
     height: 200px;
     background-color: rgb(231, 6, 6);
+    left: 300px;
 }

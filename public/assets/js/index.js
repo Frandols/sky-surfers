@@ -11,9 +11,15 @@ const MOVEMENTS = {
     ArrowLeft: 'left'
 }
 
+console.log(document.querySelector('.container').width)
+
 socket.on(
     EVENTS.POSITION,
-    position => player.style.left = position + 'px'
+    position => {
+        player.style.left = position + 'px'
+
+        console.log(player.style.left)
+    }
 )
 
 window.addEventListener(

@@ -21,7 +21,7 @@ void enviarMensaje(int);
 void recibirMensajes();
 void cerrarSocket();
 
-int x = 0;
+int x = 300;
 
 int main() {
     inicializarWinsock();
@@ -88,6 +88,8 @@ void enviarMensaje(int pos) {
 
         exit(1);
     }
+
+    printf("Enviado: %s\n", mensaje);
 }
 
 void recibirMensajes() {
@@ -102,8 +104,8 @@ void recibirMensajes() {
             if(strcmp(buffer, "none") != 0) {
                 printf("Movimiento recibido: %s\n", buffer);
 
-                if(strcmp(buffer, "left") != 0) x = x + 10;
-                else if(strcmp(buffer, "right")) x = x - 10;
+                if(strcmp(buffer, "right") == 0 && x < 600) x = x + 10;
+                else if(strcmp(buffer, "left") == 0 && x > 0) x = x - 10;
             }
         } else if (resultado == 0) printf("Conexion cerrada\n");
         else printf("Error al recibir mensaje\n");
