@@ -39,11 +39,9 @@ client.on(
 
         socket.on(
             EVENTS.CLIENT.MOVEMENT,
-            (direction: string) => controller.emit(
+            (direction: String) => controller.emit(
                 EVENTS.CONTROLLER.MOVEMENT,
-                direction === 'left' || direction === 'right'
-                ? direction
-                : 'none'
+                direction
             )
         )
     }
