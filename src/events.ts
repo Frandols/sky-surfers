@@ -1,6 +1,6 @@
 export default {
     CONTROLLER: {
-        POSITION: 'data',
+        DATA: 'data',
         MOVEMENT: 'movement'
     },
     CLIENT: {

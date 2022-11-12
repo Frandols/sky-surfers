@@ -18,6 +18,7 @@ void configurarServidor();
 void conectarSocket();
 void crearHilos();
 void controlarHilos();
+void enviarDato();
 void cerrarSocket();
 
 HANDLE hilos[3];
@@ -130,6 +131,14 @@ void controlarHilos() {
     }
 }
 
+void enviarDato(tString dato) {
+    if(send(Socket, dato, strlen(dato), 0) < 0) {
+        printf("Error al enviar dato\n");
+
+        exit(1);
+    }
+}
+
 DWORD WINAPI controlarHiloMovimientos() {
     int resultado;
 
@@ -153,15 +162,18 @@ DWORD WINAPI controlarHiloMovimientos() {
 }
 
 void enviarPosicion() {
+    tString dato = {};
     tString posicion = {};
 
     itoa(x, posicion, 10);
 
-    if(send(Socket, posicion, strlen(posicion), 0) < 0) {
-        printf("Error al enviar posicion\n");
+    strcpy(dato, "position");
+    
+    strcat(dato, "-");
 
-        exit(1);
-    }
+    strcat(dato, posicion);
+
+    enviarDato(dato);
 }
 
 DWORD WINAPI controlarHiloEnemigos() {}

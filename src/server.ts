@@ -6,6 +6,8 @@ import { Server } from 'socket.io'
 
 import openWindow from './window'
 
+import { getAdaptedData } from './adapters'
+
 import log from './logger'
 
 import EVENTS from './events'
@@ -23,11 +25,24 @@ const controller = createNETServer(
         )
 
         socket.on(
-            EVENTS.CONTROLLER.POSITION,
-            position => client.emit(
-                EVENTS.CLIENT.POSITION,
-                String(position)
-            )
+            EVENTS.CONTROLLER.DATA,
+            data => {
+                const adapted = getAdaptedData(String(data))
+
+                switch(adapted.key) {
+                    case 'position':
+                        return client.emit(
+                            EVENTS.CLIENT.POSITION,
+                            adapted.value
+                        )
+                    case 'enemy':
+                        return log.info('Enemigo desplegado')
+                    case 'atack':
+                        return log.info('Ataque recibido')
+                    default:
+                        return
+                }
+            }
         )
     }
 )
