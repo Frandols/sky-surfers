@@ -6,6 +6,7 @@ export default {
     CLIENT: {
         CONNECT: 'connect',
         POSITION: 'position',
-        MOVEMENT: 'movement'
+        MOVEMENT: 'movement',
+        ENEMY: 'enemy'
     }
 }

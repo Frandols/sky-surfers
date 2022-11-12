@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <winsock2.h>
 #include <windows.h>
+#include <time.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -28,6 +29,9 @@ DWORD WINAPI controlarHiloMovimientos();
 void enviarPosicion();
 
 DWORD WINAPI controlarHiloEnemigos();
+
+void enviarEnemigo();
+
 DWORD WINAPI controlarHiloAtaques();
 
 int x = 300;
@@ -162,21 +166,44 @@ DWORD WINAPI controlarHiloMovimientos() {
 }
 
 void enviarPosicion() {
-    tString dato = {};
-    tString posicion = {};
+    tString clave = "position";
+    tString valor = {};
 
-    itoa(x, posicion, 10);
+    int posicion = x;
 
-    strcpy(dato, "position");
+    itoa(posicion, valor, 10);
     
-    strcat(dato, "-");
+    strcat(clave, "-");
 
-    strcat(dato, posicion);
+    strcat(clave, valor);
 
-    enviarDato(dato);
+    enviarDato(clave);
 }
 
-DWORD WINAPI controlarHiloEnemigos() {}
+DWORD WINAPI controlarHiloEnemigos() {
+    srand(time(NULL));
+
+    do {
+        Sleep(2.5 * 1000);
+
+        enviarEnemigo();
+    } while(1);
+}
+
+void enviarEnemigo() {
+    tString clave = "enemy";
+    tString valor = {};
+
+    int posicion = rand() % 600;
+
+    itoa(posicion, valor, 10);
+
+    strcat(clave, "-");
+
+    strcat(clave, valor);
+
+    enviarDato(clave);
+}
 
 DWORD WINAPI controlarHiloAtaques() {}
 
