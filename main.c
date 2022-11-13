@@ -155,9 +155,9 @@ DWORD WINAPI controlarHiloMovimientos() {
 
         if(resultado > 0) {
             if(strcmp(direccion, "right") == 0) {
-                x = x < 600 ? x + 10 : x;
+                x = x < 600 ? x + 20 : x;
             } else {
-                x = x > 0 ? x - 10 : x;
+                x = x > 0 ? x - 20 : x;
             }
 
             enviarPosicion();
@@ -184,7 +184,7 @@ DWORD WINAPI controlarHiloEnemigos() {
     srand(time(NULL));
 
     do {
-        Sleep(2.5 * 1000);
+        Sleep(5 * 1000);
 
         enviarEnemigo();
     } while(1);

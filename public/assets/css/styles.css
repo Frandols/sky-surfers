@@ -1,3 +1,10 @@
+:root {
+    --bullet-origin-x: 0px;
+    --bullet-origin-y: 0px;
+    --bullet-destiny-x: 0px;
+    --bullet-destiny-y: 0px;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -32,7 +39,7 @@
     height: 200px;
     background-color: green;
 
-    animation: enemy 5s linear;
+    animation: enemy 5s linear infinite;
 }
 
 @keyframes enemy {
@@ -41,6 +48,16 @@
     }
 
     100% {
-        top: 100vh;
+        top: 100%;
     }
+}
+
+.bullet {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: blue;
+    margin-left: 75px;
+    margin-top: 75px;
+    transition: transform 1.5s linear;
 }
