@@ -7,6 +7,7 @@ export default {
         CONNECT: 'connect',
         POSITION: 'position',
         MOVEMENT: 'movement',
-        ENEMY: 'enemy'
+        ENEMY: 'enemy',
+        ATACK: 'atack'
     }
 }

@@ -3,6 +3,10 @@
 #include <winsock2.h>
 #include <windows.h>
 #include <time.h>
+#include <math.h>
+
+#include "libs/enemigos/enemigos.h"
+#include "libs/ataques/ataques.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -30,11 +34,12 @@ void enviarPosicion();
 
 DWORD WINAPI controlarHiloEnemigos();
 
-void enviarEnemigo();
+void enviarEnemigo(int);
+void enviarAtaque(int);
 
 DWORD WINAPI controlarHiloAtaques();
 
-int x = 300;
+volatile int x = 300;
 
 int main() {
     inicializarWinsock();
@@ -181,22 +186,73 @@ void enviarPosicion() {
 }
 
 DWORD WINAPI controlarHiloEnemigos() {
+    int r;
+    Ataque ataque;
+
     srand(time(NULL));
 
-    do {
-        Sleep(5 * 1000);
+    enemigos = fopen("./db/enemigos.dat", "rb");
 
-        enviarEnemigo();
-    } while(1);
+    leerEnemigo();
+
+    while(!feof(enemigos)) {
+        r = rand() % 600;
+
+        enviarEnemigo(r);
+
+        int p1 = x;
+
+        ataque.y = -200;
+        ataque.x = r;
+
+        int a = x - r;
+        int b = 441 - ataque.y;
+        float h = (float) sqrt(pow(a, 2) + pow(b, 2));
+        float t1 = (float) (h / 800) * 1000;
+
+        Sleep(t1);
+
+        if(x > p1 - 200 && x < p1 + 200) enviarAtaque(enemigo.golpe);
+
+        Sleep(1500 - t1);
+
+        int p2 = x;
+
+        ataque.y = 50;
+
+        a = x - r;
+        b = 441 - ataque.y;
+        h = (float) sqrt(pow(a, 2) + pow(b, 2));
+        float t2 = (float) (h / 800) * 1000;
+
+        Sleep(t2);
+
+        if(x > p2 - 200 && x < p2 + 200) enviarAtaque(enemigo.golpe);
+
+        Sleep(enemigo.delay - (1500 + t2));
+
+        leerEnemigo();
+    }
 }
 
-void enviarEnemigo() {
+void enviarEnemigo(int x) {
     tString clave = "enemy";
     tString valor = {};
 
-    int posicion = rand() % 600;
+    itoa(x, valor, 10);
 
-    itoa(posicion, valor, 10);
+    strcat(clave, "-");
+
+    strcat(clave, valor);
+
+    enviarDato(clave);
+}
+
+void enviarAtaque(int golpe) {
+    tString clave = "atack";
+    tString valor = {};
+
+    itoa(golpe, valor, 10);
 
     strcat(clave, "-");
 

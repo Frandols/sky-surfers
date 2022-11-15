@@ -33,6 +33,10 @@
     background-color: lightskyblue;
 }
 
+.damage {
+    background-color: black !important;
+}
+
 .enemy {
     position: absolute;
     width: 200px;

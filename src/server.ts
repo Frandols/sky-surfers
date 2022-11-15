@@ -41,7 +41,10 @@ const controller = createNETServer(
                             adapted.value
                         )
                     case 'atack':
-                        return log.info('Ataque recibido')
+                        return client.emit(
+                            EVENTS.CLIENT.ATACK,
+                            adapted.value
+                        )
                     default:
                         return
                 }

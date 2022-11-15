@@ -12,6 +12,8 @@ class Bullet {
     }
 
     deploy() {
+        console.log(this.shooter.node.offsetTop)
+
         this.node = document.createElement('div')
         this.node.className = 'bullet'
 
@@ -83,6 +85,8 @@ class Enemy {
             () => {
                 if(this.ammunitionCount === 0) return clearInterval(shooting)
 
+                const bullet = new Bullet({ shooter: this })
+
                 bullet.deploy()
 
                 this.ammunitionCount--
@@ -99,7 +103,8 @@ class Enemy {
 const EVENTS = {
     POSITION: 'position',
     MOVEMENT: 'movement',
-    ENEMY: 'enemy'
+    ENEMY: 'enemy',
+    ATACK: 'atack'
 }
 
 const MOVEMENTS = {
@@ -110,7 +115,10 @@ const MOVEMENTS = {
 socket.on(
     EVENTS.POSITION,
     position => {
-        player.style.left = position + 'px'
+        player.style.setProperty(
+            'left',
+            `${position}px`
+        )
 
         player.classList.remove('step')
     }
@@ -122,6 +130,20 @@ socket.on(
         const enemy = new Enemy({ position })
 
         enemy.deploy()
+    }
+)
+
+socket.on(
+    EVENTS.ATACK,
+    damage => {
+        console.log('Golpe recibido')
+
+        player.classList.add('damage')
+
+        setTimeout(
+            () => player.classList.remove('damage'),
+            250
+        )
     }
 )
 
