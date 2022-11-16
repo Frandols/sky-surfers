@@ -1,8 +1,18 @@
 const socket = io.connect('http://localhost:5000')
 
 const root = document.querySelector(':root')
+const start = document.querySelector('.start')
+const level = document.querySelector('.level')
 const container = document.querySelector('.container')
 const player = document.querySelector('.player')
+
+setTimeout(
+    () => start.style.setProperty(
+        'display',
+        'none'
+    ),
+    5000
+)
 
 class Bullet {
     node = null
@@ -12,8 +22,6 @@ class Bullet {
     }
 
     deploy() {
-        console.log(this.shooter.node.offsetTop)
-
         this.node = document.createElement('div')
         this.node.className = 'bullet'
 
@@ -68,6 +76,13 @@ class Enemy {
 
         container.appendChild(this.node)
 
+        const image = document.createElement('img')
+        image.src = 'assets/img/enemy.png'
+        image.width = 200
+        image.height = 200
+
+        this.node.appendChild(image)
+
         this.shoot()
 
         setTimeout(
@@ -104,7 +119,9 @@ const EVENTS = {
     POSITION: 'position',
     MOVEMENT: 'movement',
     ENEMY: 'enemy',
-    ATACK: 'atack'
+    ATACK: 'atack',
+    LEVEL: 'level',
+    LEVELS: 'levels'
 }
 
 const MOVEMENTS = {
@@ -114,14 +131,10 @@ const MOVEMENTS = {
 
 socket.on(
     EVENTS.POSITION,
-    position => {
-        player.style.setProperty(
-            'left',
-            `${position}px`
-        )
-
-        player.classList.remove('step')
-    }
+    position => player.style.setProperty(
+        'left',
+        `${position}px`
+    )
 )
 
 socket.on(
@@ -147,11 +160,33 @@ socket.on(
     }
 )
 
+socket.on(
+    EVENTS.LEVEL,
+    code => {
+        level.querySelector('.title').textContent = `Has llegado al nivel: ${code}!`
+        level.style.setProperty(
+            'display',
+            'grid'
+        )
+
+        setTimeout(
+            () => level.style.setProperty(
+                'display',
+                'none'
+            ),
+            5000
+        )
+    }
+)
+
+socket.on(
+    EVENTS.LEVELS,
+    levels => console.log('Niveles terminados: ', levels)
+)
+
 window.addEventListener(
     'keydown',
     event => {
-        player.classList.add('step')
-
         MOVEMENTS[event.code] 
         && socket.emit(
             EVENTS.MOVEMENT,

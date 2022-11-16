@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 
 typedef struct nodo{
 	int x, y;
@@ -18,8 +19,8 @@ void inicializar();
 bool colaVacia();
 void insertarAtaque(Ataque);
 void eliminarAtaque();
-
-bool atacando = true;
+float tiempoDeEspera(Ataque, int);
+bool ataqueGolpeoJugador(int, int);
 
 void inicializar(){
 	ataques.principio = NULL;
@@ -63,4 +64,16 @@ void eliminarAtaque(){
 
 	ataques.principio = aux->siguiente;
 	free(aux);
+}
+
+float tiempoDeEspera(Ataque ataque, int posicionJugador) {
+	int catetoOpuesto = posicionJugador - ataque.x;
+	int catetoAdyacente = 441 - ataque.y;
+	float hipotenusa = (float) sqrt(pow(catetoOpuesto, 2) + pow(catetoAdyacente, 2));
+
+	return (float) (hipotenusa / 800) * 1000;
+}
+
+bool ataqueGolpeoJugador(int destinoDelAtaque, int posicionJugador) {
+	return posicionJugador > destinoDelAtaque - 100 && posicionJugador < destinoDelAtaque + 100;
 }

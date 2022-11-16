@@ -7,6 +7,7 @@
 
 #include "libs/enemigos/enemigos.h"
 #include "libs/ataques/ataques.h"
+#include "libs/niveles/niveles.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -36,10 +37,15 @@ DWORD WINAPI controlarHiloEnemigos();
 
 void enviarEnemigo(int);
 void enviarAtaque(int);
+void enviarNivel(int);
+void golpearJugador(int);
+void enviarNiveles();
 
 DWORD WINAPI controlarHiloAtaques();
 
 volatile int x = 300;
+int vida = 240;
+bool finalizado = false;
 
 int main() {
     inicializarWinsock();
@@ -186,60 +192,85 @@ void enviarPosicion() {
 }
 
 DWORD WINAPI controlarHiloEnemigos() {
-    int r;
-    Ataque ataque;
-
     srand(time(NULL));
+
+    int r, p, ultimoNivelLeido, golpesRecibidos;
+    float espera;
+    Ataque ataque;
+    Nivel nivel;
 
     enemigos = fopen("./db/enemigos.dat", "rb");
 
     leerEnemigo();
 
-    while(!feof(enemigos)) {
-        r = rand() % 600;
+    ultimoNivelLeido = enemigo.nivel;
 
-        enviarEnemigo(r);
+    while(!finalizado && !feof(enemigos)) {
+        Sleep(7500);
 
-        int p1 = x;
+        golpesRecibidos = 0;
+        nivel.codigo = enemigo.nivel;
 
-        ataque.y = -200;
-        ataque.x = r;
+        while(!finalizado && enemigo.nivel == ultimoNivelLeido) {
+            r = rand() % 600;
 
-        int a = x - r;
-        int b = 441 - ataque.y;
-        float h = (float) sqrt(pow(a, 2) + pow(b, 2));
-        float t1 = (float) (h / 800) * 1000;
+            enviarEnemigo(r);
 
-        Sleep(t1);
+            p = x;
 
-        if(x > p1 - 200 && x < p1 + 200) enviarAtaque(enemigo.golpe);
+            ataque.y = -200;
+            ataque.x = r;
 
-        Sleep(1500 - t1);
+            espera = tiempoDeEspera(ataque, x);
 
-        int p2 = x;
+            Sleep(espera);
 
-        ataque.y = 50;
+            if(ataqueGolpeoJugador(p, x)) {
+                golpearJugador(enemigo.golpe);
 
-        a = x - r;
-        b = 441 - ataque.y;
-        h = (float) sqrt(pow(a, 2) + pow(b, 2));
-        float t2 = (float) (h / 800) * 1000;
+                golpesRecibidos++;
+            }
 
-        Sleep(t2);
+            Sleep(1500 - espera);
 
-        if(x > p2 - 200 && x < p2 + 200) enviarAtaque(enemigo.golpe);
+            p = x;
 
-        Sleep(enemigo.delay - (1500 + t2));
+            ataque.y = 50;
 
-        leerEnemigo();
+            espera = tiempoDeEspera(ataque, x);
+
+            Sleep(espera);
+
+            if(ataqueGolpeoJugador(p, x)) {
+                golpearJugador(enemigo.golpe);
+
+                golpesRecibidos++;
+            }
+
+            Sleep(enemigo.delay - (1500 + espera));
+
+            leerEnemigo();
+        }
+
+        nivel.golpesRecibidos = golpesRecibidos;
+
+        insertarNivel(nivel);
+        enviarNivel(enemigo.nivel);
+
+        ultimoNivelLeido = enemigo.nivel;
     }
+
+    Sleep(2000);
+
+    ordenarNiveles();
+    enviarNiveles();
 }
 
-void enviarEnemigo(int x) {
+void enviarEnemigo(int posicion) {
     tString clave = "enemy";
     tString valor = {};
 
-    itoa(x, valor, 10);
+    itoa(posicion, valor, 10);
 
     strcat(clave, "-");
 
@@ -253,6 +284,53 @@ void enviarAtaque(int golpe) {
     tString valor = {};
 
     itoa(golpe, valor, 10);
+
+    strcat(clave, "-");
+
+    strcat(clave, valor);
+
+    enviarDato(clave);
+}
+
+void enviarNivel(int nivel) {
+    tString clave = "level";
+    tString valor = {};
+
+    itoa(nivel, valor, 10);
+
+    strcat(clave, "-");
+
+    strcat(clave, valor);
+
+    enviarDato(clave);
+}
+
+void golpearJugador(int golpe) {
+    vida = vida - golpe;
+
+    if(vida <= 0) finalizado = true;
+
+    enviarAtaque(enemigo.golpe);
+}
+
+void enviarNiveles() {
+    tString clave = "levels";
+    tString valor = {};
+
+    int i;
+
+    for(i = 0; i < 3; i++) {
+        tString codigo, golpesRecibidos;
+
+        itoa(niveles[i].codigo, codigo, 10);
+        itoa(niveles[i].golpesRecibidos, golpesRecibidos, 10);
+
+        strcat(valor, codigo);
+        strcat(valor, ",");
+        strcat(valor, golpesRecibidos);
+        
+        if(i < 2) strcat(valor, ".");
+    }
 
     strcat(clave, "-");
 

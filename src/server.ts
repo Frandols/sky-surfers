@@ -29,25 +29,10 @@ const controller = createNETServer(
             data => {
                 const adapted = getAdaptedData(String(data))
 
-                switch(adapted.key) {
-                    case 'position':
-                        return client.emit(
-                            EVENTS.CLIENT.POSITION,
-                            adapted.value
-                        )
-                    case 'enemy':
-                        return client.emit(
-                            EVENTS.CLIENT.ENEMY,
-                            adapted.value
-                        )
-                    case 'atack':
-                        return client.emit(
-                            EVENTS.CLIENT.ATACK,
-                            adapted.value
-                        )
-                    default:
-                        return
-                }
+                client.emit(
+                    adapted.key,
+                    adapted.value
+                )
             }
         )
     }

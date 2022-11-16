@@ -8,6 +8,7 @@ export default {
         POSITION: 'position',
         MOVEMENT: 'movement',
         ENEMY: 'enemy',
-        ATACK: 'atack'
+        ATACK: 'atack',
+        LEVEL: 'level'
     }
 }

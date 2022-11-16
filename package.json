@@ -1,9 +1,13 @@
 {
-  "name": "juninsurfers",
+  "name": "skysurfers",
   "version": "1.0.0",
+  "main": "build/src/server.js",
   "description": "",
   "scripts": {
-    "start": "concurrently \"tsc && electron ./dist/src/server.js\" \"gcc main.c -o main -lws2_32 && wait-on tcp:5000 && main\""
+    "start": "electron ./build/src/server.js",
+    "build": "tsc && gcc main.c -o main -lws2_32",
+    "dist": "electron-builder",
+    "electron-pack": "build --em.main=build/src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -14,12 +18,13 @@
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.4"
+    "typescript": "^4.8.4",
+    "electron-builder": "^23.6.0",
+    "electron": "^21.1.1"
   },
   "dependencies": {
     "concurrently": "^7.4.0",
     "dayjs": "^1.11.5",
-    "electron": "^21.1.1",
     "express": "^4.18.2",
     "pino": "^8.6.1",
     "pino-pretty": "^9.1.1",
@@ -40,5 +45,22 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "build": {
+    "appId": "com.skysurfers.skysurfers",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "productName": "Sky Surfers",
+    "target": "NSIS",
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    }
   }
 }

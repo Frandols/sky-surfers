@@ -1,3 +1,6 @@
+import path from 'path'
+import { exec } from 'child_process'
+
 import { 
     app,
     BrowserWindow 
@@ -6,6 +9,14 @@ import {
 import log from './logger'
 
 const createWindow = () => {
+    const executablePath = 'main.exe'
+    exec(
+        executablePath,
+        err => {
+            if(err) process.exit(1)
+        }
+    )
+
     const window = new BrowserWindow({
         width: 816,
         height: 700
