@@ -1,4 +1,3 @@
-import path from 'path'
 import { exec } from 'child_process'
 
 import { 
@@ -9,13 +8,12 @@ import {
 import log from './logger'
 
 const createWindow = () => {
-    const executablePath = 'main.exe'
-    exec(
-        executablePath,
+    /* exec(
+        'main.exe',
         err => {
             if(err) process.exit(1)
         }
-    )
+    ) */
 
     const window = new BrowserWindow({
         width: 816,
@@ -23,12 +21,6 @@ const createWindow = () => {
     })
 
     window.loadFile('../../public/index.html')
-    window.webContents.openDevTools()
-
-    window.on(
-        'resize',
-        () => console.log(window.getSize())
-    )
 
     log.info('Window opened')
 }
