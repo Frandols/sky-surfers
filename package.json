@@ -6,8 +6,7 @@
   "scripts": {
     "start": "electron ./build/src/server.js",
     "build": "tsc && gcc main.c -o main -lws2_32",
-    "dist": "electron-builder",
-    "electron-pack": "build --em.main=build/src/server.js"
+    "dist": "electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -45,22 +44,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "build": {
-    "appId": "com.skysurfers.skysurfers",
-    "files": [
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "directories": {
-      "output": "dist",
-      "buildResources": "assets"
-    },
-    "productName": "Sky Surfers",
-    "target": "NSIS",
-    "nsis": {
-      "allowToChangeInstallationDirectory": true,
-      "oneClick": false
-    }
   }
 }
