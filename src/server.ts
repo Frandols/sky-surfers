@@ -4,6 +4,8 @@ import { createServer as createHTTPServer } from 'http'
 import { createServer as createNETServer } from 'net'
 import { Server } from 'socket.io'
 
+import initializeController from './controller'
+
 import openWindow from './window'
 
 import { getAdaptedData } from './adapters'
@@ -15,11 +17,11 @@ import EVENTS from './events'
 const http = createHTTPServer()
 
 const client = new Server(http)
-const controller = createNETServer(
+const controllers = createNETServer(
     socket => {
-        log.info('Controller connected')
+        log.info('Controllers connected')
 
-        controller.on(
+        controllers.on(
             EVENTS.CONTROLLER.MOVEMENT,
             direction => socket.write(direction)
         )
@@ -45,7 +47,7 @@ client.on(
 
         socket.on(
             EVENTS.CLIENT.MOVEMENT,
-            (direction: String) => controller.emit(
+            (direction: String) => controllers.emit(
                 EVENTS.CONTROLLER.MOVEMENT,
                 direction
             )
@@ -53,20 +55,29 @@ client.on(
     }
 )
 
-const init = () => {
-    http.listen(
+const init = async () => {
+    await http.listen(
         config.clientPort,
         () => log.info(`Client server enabled: http://${config.host}:${config.clientPort}`)
     )
 
-    controller.listen(
+    await controllers.listen(
         config.controllerPort,
         () => {
-            log.info(`Controller server enabled: http://${config.host}:${config.controllerPort}`)
+            log.info(`Controllers server enabled: http://${config.host}:${config.controllerPort}`)
         }
     )
     
-    openWindow()
+    const controllerInitialization = initializeController()
+
+    controllerInitialization.on(
+        'spawn',
+        () => {
+            log.info('Controllers available')
+
+            openWindow()
+        }
+    )
 }
 
 init()

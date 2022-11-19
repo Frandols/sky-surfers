@@ -8,13 +8,6 @@ import {
 import log from './logger'
 
 const createWindow = () => {
-    /* exec(
-        'main.exe',
-        err => {
-            if(err) process.exit(1)
-        }
-    ) */
-
     const window = new BrowserWindow({
         width: 816,
         height: 700

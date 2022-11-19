@@ -5,10 +5,6 @@ export default {
     },
     CLIENT: {
         CONNECT: 'connect',
-        POSITION: 'position',
-        MOVEMENT: 'movement',
-        ENEMY: 'enemy',
-        ATACK: 'atack',
-        LEVEL: 'level'
+        MOVEMENT: 'movement'
     }
 }

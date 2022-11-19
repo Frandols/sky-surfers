@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron ./build/src/server.js",
     "build": "gcc main.c -o main -lws2_32 && tsc",
-    "dist": "electron-builder"
+    "pack": "electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -43,17 +43,6 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ]
-  },
-  "build": {
-    "extends": null,
-    "files": [
-      "node_modules/**/*",
-      "build/**/*",
-      "public/**/*",
-      "main.exe",
-      "libs/**/*",
-      "db/**/*"
     ]
   }
 }
