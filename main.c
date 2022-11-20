@@ -28,7 +28,7 @@ void enviarDato(tString);
 void enviarClaveValor(tString, tString);
 void cerrarSocket();
 
-HANDLE hilos[3];
+HANDLE hilos[2];
 
 DWORD WINAPI controlarHiloMovimientos();
 
