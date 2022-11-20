@@ -1,8 +1,7 @@
-enum config {
-    host = 'localhost',
-    controllerPort = 3000,
-    controllerPath = 'main.exe',
-    clientPort = 5000
+const config = {
+    host: 'localhost',
+    controllerPort: 3000,
+    clientPort: 5000
 }
 
 export default config

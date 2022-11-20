@@ -1,10 +1,12 @@
 export default {
     CONTROLLER: {
-        DATA: 'data',
-        MOVEMENT: 'movement'
+        DATA: 'data'
     },
     CLIENT: {
         CONNECT: 'connect',
+        MOVEMENT: 'movement'
+    },
+    GAME: {
         MOVEMENT: 'movement'
     }
 }

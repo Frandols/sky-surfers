@@ -4,34 +4,40 @@ import { createServer as createHTTPServer } from 'http'
 import { createServer as createNETServer } from 'net'
 import { Server } from 'socket.io'
 
+import game from './game'
 import initializeController from './controller'
-
-import openWindow from './window'
+import initializeClient from './client'
 
 import { getAdaptedData } from './adapters'
-
-import log from './logger'
 
 import EVENTS from './events'
 
 const http = createHTTPServer()
-
-const client = new Server(http)
-const controllers = createNETServer(
-    socket => {
-        log.info('Controllers connected')
-
-        controllers.on(
-            EVENTS.CONTROLLER.MOVEMENT,
-            direction => socket.write(direction)
+const clientServer = new Server(http).on(
+    EVENTS.CLIENT.CONNECT,
+    client => {
+        client.on(
+            EVENTS.CLIENT.MOVEMENT,
+            (direction: String) => game.emit(
+                EVENTS.GAME.MOVEMENT,
+                direction
+            )
+        )
+    }
+)
+const controllerServer = createNETServer(
+    controller => {
+        game.on(
+            EVENTS.GAME.MOVEMENT,
+            direction => controller.write(direction)
         )
 
-        socket.on(
+        controller.on(
             EVENTS.CONTROLLER.DATA,
             data => {
-                const adapted = getAdaptedData(String(data))
+                const adapted = getAdaptedData(data)
 
-                client.emit(
+                clientServer.emit(
                     adapted.key,
                     adapted.value
                 )
@@ -40,44 +46,12 @@ const controllers = createNETServer(
     }
 )
 
-client.on(
-    EVENTS.CLIENT.CONNECT,
-    socket => {
-        log.info('Client connected')
+const initialize = () => {
+    http.listen(config.clientPort)
+    controllerServer.listen(config.controllerPort)
 
-        socket.on(
-            EVENTS.CLIENT.MOVEMENT,
-            (direction: String) => controllers.emit(
-                EVENTS.CONTROLLER.MOVEMENT,
-                direction
-            )
-        )
-    }
-)
-
-const init = async () => {
-    await http.listen(
-        config.clientPort,
-        () => log.info(`Client server enabled: http://${config.host}:${config.clientPort}`)
-    )
-
-    await controllers.listen(
-        config.controllerPort,
-        () => {
-            log.info(`Controllers server enabled: http://${config.host}:${config.controllerPort}`)
-        }
-    )
-    
-    const controllerInitialization = initializeController()
-
-    controllerInitialization.on(
-        'spawn',
-        () => {
-            log.info('Controllers available')
-
-            openWindow()
-        }
-    )
+    initializeController()
+    initializeClient()
 }
 
-init()
+initialize()

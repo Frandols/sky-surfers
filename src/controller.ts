@@ -1,12 +1,14 @@
-import config from '../config'
+import path from 'path'
 
 import { exec } from 'child_process'
 
+const executablePath = path.join(__dirname + '../../../')
+
 const initializeController = () => {
-    return exec(
-        config.controllerPath,
+    exec(
+        `cd ${executablePath} && main.exe`,
         err => {
-            if(err) process.exit(1)
+            if(err) throw new Error(err.message)
         }
     )
 }

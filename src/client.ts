@@ -1,11 +1,7 @@
-import { exec } from 'child_process'
-
 import { 
     app,
     BrowserWindow 
 } from 'electron'
-
-import log from './logger'
 
 const createWindow = () => {
     const window = new BrowserWindow({
@@ -13,14 +9,12 @@ const createWindow = () => {
         height: 700
     })
 
-    window.loadFile('../../public/index.html')
-
-    log.info('Window opened')
+    window.loadFile(__dirname + '../../../public/index.html')
 }
 
-const openWindow = () => app.on(
+const initializeClient = () => app.on(
     'ready',
     createWindow
 )
 
-export default openWindow
+export default initializeClient

@@ -1,8 +1,10 @@
-const getAdaptedData = (socketData: string) => {
+const getAdaptedData = (controllerData: any) => {
+    const data = String(controllerData)
+
     const [
         key,
         value
-    ] = socketData.split('-')
+    ] = data.split('-')
 
     return {
         key,

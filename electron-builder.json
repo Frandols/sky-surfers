@@ -6,13 +6,12 @@
         "output": "dist"
     },
     "files": [
-        "package.json",
-        "node_modules/**/*",
-        "build/**/*",
-        "public/**/*"
+        "node_modules",
+        "build/**/*"
     ],
     "extraResources": [
         "db/**/*",
         "main.exe"
-    ]
+    ],
+    "includeSubNodeModules": true
 }

@@ -24,7 +24,8 @@ void configurarServidor();
 void conectarSocket();
 void crearHilos();
 void controlarHilos();
-void enviarDato();
+void enviarDato(tString);
+void enviarClaveValor(tString, tString);
 void cerrarSocket();
 
 HANDLE hilos[3];
@@ -40,8 +41,6 @@ void enviarAtaque(int);
 void enviarNivel(int);
 void golpearJugador(int);
 void enviarNiveles();
-
-DWORD WINAPI controlarHiloAtaques();
 
 volatile int x = 300;
 int vida = 240;
@@ -107,15 +106,13 @@ void crearHilos() {
 
     int i;
 
-    for(i = 0; i < 3; i++) {
+    for(i = 0; i < 2; i++) {
         hilos[i] = CreateThread(
             NULL,
             0,
             i == 0
             ? controlarHiloMovimientos
-            : i == 1
-              ? controlarHiloEnemigos
-              : controlarHiloAtaques,
+            : controlarHiloEnemigos,
             NULL,
             0,
             &idHilo
@@ -133,7 +130,7 @@ void controlarHilos() {
     DWORD resultado;
 
     resultado = WaitForMultipleObjects(
-        3,
+        2,
         hilos,
         TRUE,
         INFINITE
@@ -152,6 +149,16 @@ void enviarDato(tString dato) {
 
         exit(1);
     }
+}
+
+void enviarClaveValor(tString clave, tString valor) {
+    tString dato;
+
+    strcpy(dato, clave);
+    strcat(dato, "-");
+    strcat(dato, valor);
+
+    enviarDato(dato);
 }
 
 DWORD WINAPI controlarHiloMovimientos() {
@@ -177,18 +184,11 @@ DWORD WINAPI controlarHiloMovimientos() {
 }
 
 void enviarPosicion() {
-    tString clave = "position";
-    tString valor = {};
+    tString posicion;
 
-    int posicion = x;
+    itoa(x, posicion, 10);
 
-    itoa(posicion, valor, 10);
-    
-    strcat(clave, "-");
-
-    strcat(clave, valor);
-
-    enviarDato(clave);
+    enviarClaveValor("position", posicion);
 }
 
 DWORD WINAPI controlarHiloEnemigos() {
@@ -267,42 +267,27 @@ DWORD WINAPI controlarHiloEnemigos() {
 }
 
 void enviarEnemigo(int posicion) {
-    tString clave = "enemy";
-    tString valor = {};
+    tString enemigo;
 
-    itoa(posicion, valor, 10);
+    itoa(posicion, enemigo, 10);
 
-    strcat(clave, "-");
-
-    strcat(clave, valor);
-
-    enviarDato(clave);
+    enviarClaveValor("enemy", enemigo);
 }
 
 void enviarAtaque(int golpe) {
-    tString clave = "atack";
-    tString valor = {};
+    tString ataque;
 
-    itoa(golpe, valor, 10);
+    itoa(golpe, ataque, 10);
 
-    strcat(clave, "-");
-
-    strcat(clave, valor);
-
-    enviarDato(clave);
+    enviarClaveValor("atack", ataque);
 }
 
-void enviarNivel(int nivel) {
-    tString clave = "level";
-    tString valor = {};
+void enviarNivel(int codigo) {
+    tString nivel;
 
-    itoa(nivel, valor, 10);
+    itoa(codigo, nivel, 10);
 
-    strcat(clave, "-");
-
-    strcat(clave, valor);
-
-    enviarDato(clave);
+    enviarClaveValor("level", nivel);
 }
 
 void golpearJugador(int golpe) {
@@ -314,32 +299,24 @@ void golpearJugador(int golpe) {
 }
 
 void enviarNiveles() {
-    tString clave = "levels";
-    tString valor = {};
+    tString estadisticas;
 
     int i;
-
     for(i = 0; i < 3; i++) {
         tString codigo, golpesRecibidos;
 
         itoa(niveles[i].codigo, codigo, 10);
         itoa(niveles[i].golpesRecibidos, golpesRecibidos, 10);
 
-        strcat(valor, codigo);
-        strcat(valor, ",");
-        strcat(valor, golpesRecibidos);
+        strcat(estadisticas, codigo);
+        strcat(estadisticas, ",");
+        strcat(estadisticas, golpesRecibidos);
         
-        if(i < 2) strcat(valor, ".");
+        if(i < 2) strcat(estadisticas, ".");
     }
 
-    strcat(clave, "-");
-
-    strcat(clave, valor);
-
-    enviarDato(clave);
+    enviarClaveValor("levels", estadisticas);
 }
-
-DWORD WINAPI controlarHiloAtaques() {}
 
 void cerrarSocket() {
     closesocket(Socket);
