@@ -3,6 +3,9 @@ const socket = io.connect('http://localhost:5000')
 const root = document.querySelector(':root')
 const start = document.querySelector('.start')
 const level = document.querySelector('.level')
+const defeat = document.querySelector('.defeat')
+const statistics = document.querySelector('.statistics')
+const bestLevel = document.querySelector('.bestLevel')
 const container = document.querySelector('.container')
 const player = document.querySelector('.player')
 
@@ -40,6 +43,17 @@ class Bullet {
         const a = player.offsetLeft - this.shooter.node.offsetLeft
         const b = player.offsetTop - this.shooter.node.offsetTop
         const angle = Math.atan(a / b)
+
+        const image = document.createElement('img')
+        image.src = 'assets/img/misil.png'
+        image.width = 200
+        image.height = 43
+        image.style.setProperty(
+            'transform',
+            `rotate(${-90 - angle * (180 / Math.PI)}deg)`
+        )
+
+        this.node.appendChild(image)
 
         this.node.style.setProperty(
             'transform', 
@@ -121,7 +135,9 @@ const EVENTS = {
     ENEMY: 'enemy',
     ATACK: 'atack',
     LEVEL: 'level',
-    LEVELS: 'levels'
+    DEFEAT: 'defeat',
+    STATISTICS: 'statistics',
+    BEST_LEVEL: 'bestLevel'
 }
 
 const MOVEMENTS = {
@@ -148,9 +164,7 @@ socket.on(
 
 socket.on(
     EVENTS.ATACK,
-    damage => {
-        console.log('Golpe recibido')
-
+    () => {
         player.classList.add('damage')
 
         setTimeout(
@@ -163,7 +177,7 @@ socket.on(
 socket.on(
     EVENTS.LEVEL,
     code => {
-        level.querySelector('.title').textContent = `Has llegado al nivel: ${code}!`
+        level.querySelector('.title').textContent = `Has llegado al nivel: ${code}`
         level.style.setProperty(
             'display',
             'grid'
@@ -180,8 +194,102 @@ socket.on(
 )
 
 socket.on(
-    EVENTS.LEVELS,
-    levels => console.log('Niveles terminados: ', levels)
+    EVENTS.DEFEAT,
+    level => {
+        defeat.querySelector('.title').textContent = `Has sido derrotado en el nivel ${level}`
+        defeat.style.setProperty(
+            'display',
+            'grid'
+        )
+
+        setTimeout(
+            () => defeat.style.setProperty(
+                'display',
+                'none'
+            ),
+            5000
+        )
+    }
+)
+
+socket.on(
+    EVENTS.STATISTICS,
+    levels => {
+        levels = levels
+            .split('.')
+            .map(
+                level => {
+                    const [
+                        id,
+                        hits
+                    ] = level.split(',')
+
+                    return {
+                        id: Number(id),
+                        hits: Number(hits)
+                    }
+                }
+            )
+            .filter(
+                level => level.id !== 0
+            )
+
+        for(let i = 0; i < levels.length; i++) {
+            const level = document.createElement('li')
+            const id = document.createElement('h1')
+            const hits = document.createElement('h1')
+            
+            id.className = 'id'
+            hits.className = 'hits'
+
+            id.textContent = `Nivel ${levels[i].id}`
+            hits.textContent = `Golpes recibidos: ${levels[i].hits}`
+
+            level.appendChild(id)
+            level.appendChild(hits)
+
+            statistics
+                .querySelector('.levels')
+                .appendChild(level)
+        }
+        statistics.style.setProperty(
+            'display',
+            'flex'
+        )
+
+        setTimeout(
+            () => {
+                if(levels.length === 1) return window.close()
+
+                statistics.style.setProperty(
+                    'display',
+                    'none'
+                )
+            },
+            5000
+        )
+    }
+)
+
+socket.on(
+    EVENTS.BEST_LEVEL,
+    level => {
+        const [
+            id,
+            hits
+        ] = level.split(',')
+
+        bestLevel.querySelector('.title').textContent = `Tu mejor nivel ha sido el ${id}, golpes recibidos: ${hits}`
+        bestLevel.style.setProperty(
+            'display',
+            'grid'
+        )
+
+        setTimeout(
+            () => window.close(),
+            5000
+        )
+    }
 )
 
 window.addEventListener(

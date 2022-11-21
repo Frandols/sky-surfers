@@ -37,14 +37,17 @@ void enviarPosicion();
 DWORD WINAPI controlarHiloEnemigos();
 
 void enviarEnemigo(int);
+void golpearJugador(int);
 void enviarAtaque(int);
 void enviarNivel(int);
-void golpearJugador(int);
-void enviarNiveles();
+void notificarDerrota(int);
+void enviarEstadisticas();
+void enviarMejorNivel();
 
 volatile int x = 300;
-int vida = 240;
+int vida = 200;
 bool finalizado = false;
+bool derrotado = false;
 
 int main() {
     inicializarWinsock();
@@ -253,17 +256,33 @@ DWORD WINAPI controlarHiloEnemigos() {
         }
 
         nivel.golpesRecibidos = golpesRecibidos;
-
         insertarNivel(nivel);
-        enviarNivel(enemigo.nivel);
 
         ultimoNivelLeido = enemigo.nivel;
+
+        if(!finalizado) enviarNivel(enemigo.nivel);
     }
 
     Sleep(2000);
 
+    if(derrotado) {
+        notificarDerrota(ultimoNivelLeido);
+
+        Sleep(5000);
+    }
+
     ordenarNiveles();
-    enviarNiveles();
+    enviarEstadisticas();
+
+    Sleep(5000);
+
+    if(ultimoNivelLeido > 1) {
+        mejorNivel = niveles[ultimoNivelLeido];
+
+        buscarMejorNivel();
+
+        enviarMejorNivel();
+    }
 }
 
 void enviarEnemigo(int posicion) {
@@ -272,6 +291,17 @@ void enviarEnemigo(int posicion) {
     itoa(posicion, enemigo, 10);
 
     enviarClaveValor("enemy", enemigo);
+}
+
+void golpearJugador(int golpe) {
+    vida = vida - golpe;
+
+    if(vida <= 0) {
+        finalizado = true;
+        derrotado = true;
+    }
+
+    enviarAtaque(enemigo.golpe);
 }
 
 void enviarAtaque(int golpe) {
@@ -290,16 +320,16 @@ void enviarNivel(int codigo) {
     enviarClaveValor("level", nivel);
 }
 
-void golpearJugador(int golpe) {
-    vida = vida - golpe;
+void notificarDerrota(int nivel) {
+    tString derrota;
 
-    if(vida <= 0) finalizado = true;
+    itoa(nivel, derrota, 10);
 
-    enviarAtaque(enemigo.golpe);
+    enviarClaveValor("defeat", derrota);
 }
 
-void enviarNiveles() {
-    tString estadisticas;
+void enviarEstadisticas() {
+    tString estadisticas = {};
 
     int i;
     for(i = 0; i < 3; i++) {
@@ -315,7 +345,20 @@ void enviarNiveles() {
         if(i < 2) strcat(estadisticas, ".");
     }
 
-    enviarClaveValor("levels", estadisticas);
+    enviarClaveValor("statistics", estadisticas);
+}
+
+void enviarMejorNivel() {
+    tString nivel, codigo, golpesRecibidos;
+
+    itoa(mejorNivel.codigo, codigo, 10);
+    itoa(mejorNivel.golpesRecibidos, golpesRecibidos, 10);
+
+    strcpy(nivel, codigo);
+    strcat(nivel, ",");
+    strcat(nivel, golpesRecibidos);
+
+    enviarClaveValor("bestLevel", nivel);
 }
 
 void cerrarSocket() {

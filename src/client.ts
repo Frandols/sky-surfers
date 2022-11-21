@@ -10,6 +10,8 @@ const createWindow = () => {
     })
 
     window.loadFile(__dirname + '../../../public/index.html')
+
+    if(!app.isPackaged) window.webContents.openDevTools()
 }
 
 const initializeClient = () => app.on(

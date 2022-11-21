@@ -10,8 +10,10 @@ typedef Nivel Niveles[MAX];
 
 void insertarNivel(Nivel);
 void ordenarNiveles();
+void buscarMejorNivel();
 
 Niveles niveles;
+Nivel mejorNivel;
 
 void insertarNivel(Nivel nivel) {
     niveles[nivel.codigo - 1] = nivel;
@@ -40,4 +42,12 @@ void ordenarNiveles() {
     }
 
     printf("\nSeleccion directa: Vector ordenado exitosamente\n");
+}
+
+void buscarMejorNivel() {
+    int i = 0;
+
+    for(i = 0; i < MAX; i++) {
+        if(niveles[i].codigo != 0 && niveles[i].golpesRecibidos < mejorNivel.golpesRecibidos) mejorNivel = niveles[i];
+    }
 }
