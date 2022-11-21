@@ -6,7 +6,8 @@ import {
 const createWindow = () => {
     const window = new BrowserWindow({
         width: 816,
-        height: 700
+        height: 700,
+        resizable: false
     })
 
     window.loadFile(__dirname + '../../../public/index.html')
